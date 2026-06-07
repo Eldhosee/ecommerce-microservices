@@ -1,10 +1,12 @@
 package com.example.demo.service;
 
-import java.util.Optional;
+import java.util.UUID;
 
-import com.example.demo.document.ProductDocument;
+import com.example.demo.dto.ProductRequest;
+import com.example.demo.dto.ProductResponse;
+
 
 public interface ProductService {
-	ProductDocument saveProduct(ProductDocument product);
-	Optional<ProductDocument> getProductById(String id) ;
+	ProductResponse saveProduct(ProductRequest product);
+	ProductResponse getProductById(String id) ;
 }

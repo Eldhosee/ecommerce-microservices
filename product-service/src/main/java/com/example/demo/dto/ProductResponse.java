@@ -1,23 +1,16 @@
-package com.example.demo.document;
+package com.example.demo.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
+import com.example.demo.document.ProductStatus;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Document(indexName = "products")
-public class ProductDocument {
+public class ProductResponse {
 
-	@Id
 	private UUID  id;
 	
 	private String name;
