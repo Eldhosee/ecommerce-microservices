@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import java.util.UUID;
+import java.util.List;
 
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductResponse;
 
 
 public interface ProductService {
-	ProductResponse saveProduct(ProductRequest product);
+	List<ProductResponse> saveProduct(List<ProductRequest> product);
 	ProductResponse getProductById(String id) ;
 }

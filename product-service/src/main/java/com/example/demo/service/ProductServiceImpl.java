@@ -1,8 +1,9 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
 
@@ -24,16 +25,26 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     @Override
-    public ProductResponse saveProduct(ProductRequest request) {
+    public List<ProductResponse> saveProduct(List<ProductRequest> request) {
 
-        ProductDocument product = productMapper.toDocument(request);
+        List<ProductDocument> products = request.stream().map(i->
+        {
+        	ProductDocument newProduct=productMapper.toDocument(i);
+        	newProduct.setCreatedAt(LocalDateTime.now());
+        	newProduct.setId(UUID.randomUUID());
+        	newProduct.setStatus(ProductStatus.ACTIVE);
+        	
+        	return newProduct;
+        }
+        ).toList();
+        
+        List<ProductDocument> savedProducts = StreamSupport
+                .stream(productRepository.saveAll(products).spliterator(), false)
+                .toList();
 
-        product.setCreatedAt(LocalDateTime.now());
-        product.setId(UUID.randomUUID());
-        product.setStatus(ProductStatus.ACTIVE);
-
-        return productMapper.toResponse(
-                productRepository.save(product));
+        return savedProducts.stream()
+                .map(productMapper::toResponse)
+                .toList();
 
     }
 
