@@ -11,6 +11,8 @@ import com.example.demo.document.ProductDocument;
 import com.example.demo.document.ProductStatus;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductResponse;
+import com.example.demo.dto.ProductUpdateRequest;
+import com.example.demo.exception.ProductNotFoundException;
 import com.example.demo.mapper.ProductMapper;
 import com.example.demo.repository.ProductRepository;
 
@@ -51,8 +53,43 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse getProductById(String id) {
         ProductDocument product= productRepository.findById(id)
-        		.orElseThrow(()->new RuntimeException("Product not found"));
+        		.orElseThrow(()->new ProductNotFoundException(id));
         
         return productMapper.toResponse(product);
     }
+    
+    @Override
+    public ProductResponse updateProduct(String id,ProductUpdateRequest product)
+    {
+    	ProductDocument existingProduct=productRepository.findById(id)
+    			.orElseThrow(()-> new ProductNotFoundException(id));
+    	
+        productMapper.updateProduct(
+                product,
+                existingProduct);
+
+        existingProduct.setUpdatedAt(LocalDateTime.now());
+
+        ProductDocument updated =
+                productRepository.save(existingProduct);
+
+        return productMapper.toResponse(updated);
+    }
+    
+    @Override
+    public String deleteProduct(String id)
+    {
+    	ProductDocument product =productRepository.findById(id)
+    			.orElseThrow(()-> new ProductNotFoundException(id));
+    	
+    	if(product.getStatus() == ProductStatus.DELETED) {
+    	    throw new RuntimeException("Product already deleted");
+    	}
+    	product.setStatus(ProductStatus.DELETED);
+    	product.setDeletedAt(LocalDateTime.now());
+    	productRepository.save(product) ;
+    	 return "Successfully deleted";
+    	
+    }
+    
 }

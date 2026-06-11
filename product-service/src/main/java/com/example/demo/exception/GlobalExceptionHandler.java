@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleProductNotFound(
+    public ResponseEntity<ErrorResponse> globalException(
             Exception ex,
             HttpServletRequest request) {
 
@@ -25,6 +25,23 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
 
+
+        return new ResponseEntity<>(
+                response,
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductNotFound(ProductNotFoundException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse response = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .error("Product Not Found")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
 
         return new ResponseEntity<>(
                 response,
