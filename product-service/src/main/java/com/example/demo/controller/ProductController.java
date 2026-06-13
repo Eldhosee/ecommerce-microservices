@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.ProductListRequest;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductResponse;
 import com.example.demo.dto.ProductUpdateRequest;
@@ -27,10 +28,12 @@ public class ProductController {
     private   ProductService productService;
 
 
-    @PostMapping
-    public List<ProductResponse> saveProduct( @RequestBody List< @Valid ProductRequest> product) {
-        return productService.saveProduct(product);
-    }
+	@PostMapping
+	public List<ProductResponse> saveProduct(
+	        @Valid @RequestBody ProductListRequest request) {
+
+	    return productService.saveProduct(request.getProducts());
+	}
 
     @GetMapping("/{id}")
     public ProductResponse getProduct( @PathVariable String id) {

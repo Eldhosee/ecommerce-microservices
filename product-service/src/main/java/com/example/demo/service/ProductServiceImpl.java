@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
         {
         	ProductDocument newProduct=productMapper.toDocument(i);
         	newProduct.setCreatedAt(LocalDateTime.now());
-        	newProduct.setId(UUID.randomUUID());
+        	newProduct.setId(UUID.randomUUID().toString());
         	newProduct.setStatus(ProductStatus.ACTIVE);
         	
         	return newProduct;
