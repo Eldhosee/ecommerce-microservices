@@ -3,19 +3,25 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.ProductListRequest;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductResponse;
 import com.example.demo.dto.ProductUpdateRequest;
+import com.example.demo.service.JwtService;
 import com.example.demo.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -26,8 +32,39 @@ public class ProductController {
 	
 	@Autowired
     private   ProductService productService;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private JwtService jwtService;
+	
+	@PostMapping("/login")
+	public String login(
+	        @RequestBody LoginRequest request) {
 
+	    Authentication authentication =
+	            authenticationManager.authenticate(
+	                    new UsernamePasswordAuthenticationToken(
+	                            request.getName(),
+	                            request.getPassword()
+	                    )
+	            );
 
+	    return jwtService.generateToken(authentication.getName());
+	}
+	
+	@GetMapping("/test")
+	public String test(
+	        @RequestHeader("Authorization")
+	        String authHeader) {
+
+	    String token =
+	            authHeader.substring(7);
+
+	    return jwtService.extractUsername(token);
+	}
+	
 	@PostMapping
 	public List<ProductResponse> saveProduct(
 	        @Valid @RequestBody ProductListRequest request) {
